@@ -124,7 +124,7 @@ class QuizGame(tk.Frame):
         self.active_qst = self.quizgen.get_question()
 
         # show image
-        maxsize = (800, 600)
+        maxsize = (600, 400)
 
         self.active_qst.image.thumbnail(maxsize, PIL.Image.ANTIALIAS)
         img = PIL.ImageTk.PhotoImage(self.active_qst.image)
