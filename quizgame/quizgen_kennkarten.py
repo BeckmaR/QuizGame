@@ -61,7 +61,7 @@ class quizgen_kennkarten(basequizgen):
             elif len(self.families[correct_family]) == 4:
                 answers = self.families[correct_family]
             else:
-                chosen_difficulty = "high" # fallback to simpler selection
+                chosen_difficulty = "high"  # fallback to simpler selection
 
 
         if chosen_difficulty == "high":
