@@ -1,5 +1,4 @@
 import PIL.Image
-from django.utils.autoreload import code_changed
 
 
 class question:
