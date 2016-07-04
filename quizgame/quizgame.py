@@ -14,6 +14,8 @@ class QuizGame(tk.Frame):
             raise Exception("No proper Quiz Generator given")
         self.quizgen = quizgen
 
+        self.difficulties = self.quizgen.get_difficulties()
+
         self.tkimage = None
 
         self.num_answers = 4
@@ -24,9 +26,6 @@ class QuizGame(tk.Frame):
         self.photolabel = tk.Label(self.parent, relief="raised")
         self.questionlabel = tk.Label(self.parent, textvariable=self.questiontext, relief="raised")
 
-        self.photolabel.grid(row=0, padx=10, pady=10)
-        self.questionlabel.grid(row=1, pady=(0, 20))
-
         # configure answer buttons
         self.answers = []
         self.answerbuttons = []
@@ -36,16 +35,16 @@ class QuizGame(tk.Frame):
             self.button3,
             self.button4
         ]
+
         for i in range(0, 4):
             self.answers.append(tk.StringVar())
             self.answerbuttons.append(
-                tk.Button(self.parent, textvariable=self.answers[i], command=self.callbacks[i])
+                tk.Button(self.parent, textvariable=self.answers[i], state=tk.DISABLED, command=self.callbacks[i])
             )
-            self.answerbuttons[i].grid(row=2+i)
 
         self.next_button = tk.Button(self.parent, text="Next Question", command=self.show_question)
-        self.next_button.grid(row=7, pady=(10,0))
 
+        # show number of wrong / correct attempts
         self.num_correct = 0
         self.num_wrong = 0
 
@@ -56,14 +55,58 @@ class QuizGame(tk.Frame):
         self.var_wrong.set("Wrong: 0")
 
         self.rateframe = tk.Frame(self.parent)
-        self.rateframe.grid(row=8, pady=(10,10))
 
         self.correct_label = tk.Label(self.rateframe, textvariable=self.var_correct)
         self.wrong_label = tk.Label(self.rateframe, textvariable=self.var_wrong)
+
+        self.default_button_color = self.parent.cget("bg")
+
+        if len(self.difficulties) > 1:
+            self.show_select_difficulties()
+        else:
+            self.set_grid()
+            self.quizgen.set_difficulty(self.difficulties[0])
+            self.show_question()
+
+    def set_grid(self):
+        self.photolabel.grid(row=0, padx=10, pady=10)
+        self.questionlabel.grid(row=1, pady=(0, 20))
+
+        for i in range(0, 4):
+            self.answerbuttons[i].grid(row=2+i)
+
+        self.next_button.grid(row=7, pady=(10, 0))
+
+        self.rateframe.grid(row=8, pady=(10, 10))
+
+        #inside self.rateframe
         self.correct_label.grid(row=0, column=0)
         self.wrong_label.grid(row=0, column=1)
 
-        self.default_button_color = self.parent.cget("bg")
+    def show_select_difficulties(self):
+        # generate callback function
+        def callback(s):
+            def inner_fun():
+                self.quizgen.set_difficulty(s)
+                self.diff_frame.grid_forget()
+                del self.diff_frame
+                self.set_grid()
+                self.show_question()
+
+            return inner_fun
+
+        self.diff_frame = tk.Frame(self.parent, width=400, height=400)
+        self.diff_frame.grid(row=0, column=0)
+        self.parent.grid_rowconfigure(index=0, minsize=400)
+        self.parent.grid_columnconfigure(index=0, minsize=400)
+        self.diff_buttons = []
+        row = 0
+        self.explainlabel = tk.Label(self.diff_frame, text="Choose a difficulty!")
+        self.explainlabel.grid(row=row)
+        for diff in self.difficulties:
+            self.diff_buttons.append(tk.Button(self.diff_frame, text=diff, command=callback(diff)))
+            self.diff_buttons[row].grid(row=row+1)
+            row += 1
 
     def show_question(self):
         self.active_qst = self.quizgen.get_question()
