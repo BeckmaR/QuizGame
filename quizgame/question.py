@@ -7,8 +7,6 @@ class question:
             raise Exception("Question should be a string")
         if not isinstance(answers, list):
             raise Exception("Answers should be a list")
-        if len(answers) <= 1:
-            raise Exception("More than one answer should be given")
         if not isinstance(correct_answer, str):
             raise Exception("Correct answer is not a string!")
         if correct_answer not in answers:

@@ -15,7 +15,7 @@ class quizgen_kennkarten(basequizgen):
 
         self.index = 0
 
-        self.possible_difficulties = ["normal", "high", "expert"]
+        self.possible_difficulties = ["normal", "high", "expert", "pro"]
 
         # generate family groupings for higher difficulty questions
         self.families = {}
@@ -81,7 +81,7 @@ class quizgen_kennkarten(basequizgen):
                     if other_family != correct_family and len(self.families[other_family]) > 1:
                         break
                 answers.extend(random.sample(self.families[other_family], 2))
-            else: # if not more than one plant available from family, shuffle completely
+            else:
                 chosen_difficulty = "normal"  # fallback
 
         if chosen_difficulty == "normal":
@@ -95,7 +95,10 @@ class quizgen_kennkarten(basequizgen):
             for i, ans in enumerate(answers):
                 answers[i] = self.get_plant_name(ans)
 
-        #random.shuffle(answers)
+        if chosen_difficulty == "pro":
+            answers = [self.get_plant_name(correct_answer)]
+
+        random.shuffle(answers)
         return answers
 
     def get_plant_name(self, filename):
